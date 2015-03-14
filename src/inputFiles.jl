@@ -15,4 +15,9 @@ function checkFile(file)
 
   println("Good file with ",nrow, " rows and ",ncol," columns!!!")
   close(f)
+
+  return nrow,ncol
 end
+
+#write out to text: writedlm is Okay, (18904,50564) matrix takes 305 seconds
+#write out to binary

@@ -62,7 +62,7 @@ end
 
 
 include("inputFiles.jl")
-
+include("genotypes.jl")
 
 
 
