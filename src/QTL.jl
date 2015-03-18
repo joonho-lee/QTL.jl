@@ -36,11 +36,11 @@ function delete_rc(x,rowi,colj)
     nrow = [1:numRow]
     ncol = [1:numCol]
 
-    if j != 0
+    if rowi != 0
         deleteat!(nrow,rowi)
     end
 
-    if k != 0
+    if colj != 0
         deleteat!(ncol,colj)
     end
 
@@ -59,7 +59,26 @@ function find_column_byname(file,names)
   return nameIndex
 end
 
+function get_gene_freq(X,id=true)
+  ncol=size(X,2)
+  start=1
+  freq=[]
 
+  if id==true
+    freq=zeros(size(X,2)-1)
+    start += 1
+  else
+    freq=zeros(size(X,2))
+  end
+
+  k=1
+  for i=start:ncol
+    freq[k]=mean(X[:,i])/2
+    k+=1
+  end
+
+  return freq
+end
 
 include("inputFiles.jl")
 include("genotypes.jl")

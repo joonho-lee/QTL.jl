@@ -43,7 +43,7 @@ function findfixedloci(X)
 
     for i = 1:ncol
         if var(X[:,i])==0.0
-            push!(delcolumn,i)
+            push!(fixedloci,i)
         end
 
         if(i%10000==0)
