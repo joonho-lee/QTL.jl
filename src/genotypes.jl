@@ -4,12 +4,12 @@ function read_genotypes(file,nrow,ncol,header=true)
 
     if header==true
         readline(f)
-        mat = zeros(Int64,nrow-1,ncol)
-    else
-        mat = zeros(Int64,nrow,ncol)
+        nrow=nrow-1
     end
 
-    for i=1:(nrow-1)
+    mat = zeros(Int64,nrow,ncol)
+
+    for i=1:nrow
         mat[i,:]=int(split(readline(f)))
 
         if(i%1000==0)
@@ -18,7 +18,6 @@ function read_genotypes(file,nrow,ncol,header=true)
     end
 
     close(f)
-
     return mat
 end
 
