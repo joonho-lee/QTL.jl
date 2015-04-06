@@ -1,6 +1,5 @@
 function read_genotypes(file,nrow,ncol,header=true)
     f=open(file)
-    mat = []
 
     if header==true
         readline(f)
