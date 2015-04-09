@@ -24,11 +24,11 @@ function mkmat_incidence_factor(b)
 
     nrow=1
     for i in b
-        myindex=DictFactor[i]
+        myindex=dictFactor[i]
         coMat[nrow,myindex]=1
         nrow=nrow+1
     end
-    return full(coMat),dictFactor
+    return full(coMat),factor
 end
 
 function delete_rc(x,rowi,colj)
