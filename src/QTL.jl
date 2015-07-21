@@ -84,5 +84,6 @@ include("inputFiles.jl")
 include("genotypes.jl")
 
 
+export missing2mean
 
 end

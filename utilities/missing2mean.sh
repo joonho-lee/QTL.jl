@@ -27,7 +27,7 @@ end
 function main()
       parsed_args = parse_commandline()
 
-      mygeno=readdlm(parsed_args["f"])
+      mygeno=readdlm(parsed_args["i"])
       mymissing=parsed_args["m"]
       missing2mean(mygeno,mymissing)
       writedlm(parsed_args["o"],mygeno," ")
