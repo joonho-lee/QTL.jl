@@ -1,57 +1,54 @@
-function read_genotypes(file,nrow,ncol,header=true)
-    f=open(file)
-
-    if header==true
-        readline(f)
-        nrow=nrow-1
-    end
-
-    mat = zeros(Int64,nrow,ncol)
-
-    for i=1:nrow
-        mat[i,:]=int(split(readline(f)))
-
-        if(i%1000==0)
-            println("This is line ",i)
-        end
-    end
-
-    close(f)
-    return mat
+type Genotypes
+  obsID::Array{UTF8String,1}  #row ID of genotypes
+  markerID
+  nObs::Int64
+  nMarkers::Int64
+  alleleFreq::Array{Float64,2}
+  centered::Bool
+  genotypes::Array{Float64,2}
 end
 
+function make_genotypes(file;id4col=false,id4row=true,center=true)
+    myfile = open(file)
+    #get number of columns
+    row1   = split(readline(myfile))
 
-function missing2mean(X,missing=9)
-    nrow,ncol = size(X)
-    for i=1:ncol
-        index=find(x->x==missing,X[:,i])
-        cols = [1:nrow]
-        deleteat!(cols,index)
-        X[index,i]=int(mean(X[cols,i]))
-
-        if(i%3000==0)
-            println("This is line ",i)
-        end
+    if id4col==true
+      markerID=row1[2:end]  #skip header
+    else
+      markerID= 0.0
     end
+    #set types for each column and get number of markers
+    ncol= length(row1)
+    etv = Array(DataType,ncol)
+    fill!(etv,Float64)
+    if id4row == true
+      num_markers  = ncol - 1
+      etv[1]=UTF8String
+    else
+      num_markers  = ncol
+    end
+    close(myfile)
+
+    #read genotypes
+    df = readtable(file, eltypes=etv, separator = ' ',header=id4col)
+
+    obsID=convert(Array,df[:,1])
+    genotypes =convert(Array,df[:,2:end])
+    nObs,nMarkers = size(genotypes)
+
+    if center==true
+        markerMeans = center!(genotypes) #centering
+    else
+        markerMeans = center(genotypes)  #get marker means
+    end
+    p             = markerMeans/2.0
+    #mean2pq      = (2*p*(1-p)')[1,1]
+
+    return Genotypes(obsID,markerID,nObs,nMarkers,p,center,genotypes)
 end
 
-function findfixedloci(X)
-    nrow,ncol=size(X)
-    fixedloci=Int64[]
-
-    for i = 1:ncol
-        if var(X[:,i])==0.0
-            push!(fixedloci,i)
-        end
-
-        if(i%10000==0)
-            println("This is column ",i)
-        end
-    end
-
-    return fixedloci
-end
-
-
+export make_genotypes
+export Genotypes
 
 #function rw2binary()

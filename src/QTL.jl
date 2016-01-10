@@ -1,5 +1,6 @@
 module QTL
 
+using DataFrames
 
 function get_column(X,j)
   nrow,ncol = size(X)
@@ -82,7 +83,7 @@ end
 
 include("inputFiles.jl")
 include("genotypes.jl")
-
+include("tools.jl")
 
 export missing2mean
 
