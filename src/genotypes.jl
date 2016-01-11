@@ -8,7 +8,7 @@ type Genotypes
   genotypes::Array{Float64,2}
 end
 
-function make_genotypes(file;id4col=false,id4row=true,center=true)
+function make_genotypes(file;id4col=false,center=true)
     myfile = open(file)
     #get number of columns
     row1   = split(readline(myfile))
@@ -50,5 +50,3 @@ end
 
 export make_genotypes
 export Genotypes
-
-#function rw2binary()

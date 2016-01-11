@@ -24,7 +24,7 @@ function checkFile(file)
   close(f)
 end
 
-function QC(infile,outfile;id4col=true,id4row=true,missing=9.0)
+function QC(infile,outfile;id4col=true,missing=9.0,MAF=0.1)
 
     myfile = open(infile)
 
@@ -41,7 +41,7 @@ function QC(infile,outfile;id4col=true,id4row=true,missing=9.0)
     df = readtable(file, eltypes=etv, separator = ' ',header=id4col)
     #quality control
     missing2mean(df,id4row=id4row,missing=missing)
-    deleteMAF!(df,id4row=id4row,MAF=0.1)
+    deleteMAF!(df,id4row=id4row,MAF=MAF)
 
     #write out the new file
     writetable(outfile, df, separator=' ')
@@ -78,6 +78,5 @@ function deleteMAF!(X;id4row=false,MAF=0.1)
     return df
 end
 
-
-
-#function rw2binary()
+export QC
+export checkFile
