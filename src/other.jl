@@ -8,21 +8,19 @@ type EstimatedParameters
     u                   # sample of marker effects
     δ                   # inclusion indicator for marker effects
     π                   # probFixed
-    locusEffectVar      #locus-specific variance
-    iter
-    yCorr
+    locusEffectVar      #locuda-specific variance
 
-    function EstimatedParameters(input::InputParameters,
-                                 marker_matrix::MarkerMatrix,
+    function EstimatedParameters(input_parameters::InputParameters,
+                                 marker_matrix::MarkerMatrix
                                  fixed_matrix::FixedMatrix)
-        vare        = input.varResidual
-        π           = input.probFixed
-        dfEffectVar = input.dfEffectVar
-        nuRes       = input.nuRes
-        varGenotypic= input.varGenotypic
+        vare        = input_parameters.varResidual
+        π           = input_parameters.probFixed
+        dfEffectVar = input_parameters.dfEffectVar
+        nuRes       = input_parameters.nuRes
+        varGenotypic= input_parameters.varGenotypic
         mean2pq     = marker_matrix.mean2pq
-        nMarkers    = marker.ncols
-        nFixedEffects  = fix.ncols
+        nMarkers    = marker_matrix.nMarkers
+        nFixedEffects  = fixed_matrix.nFixedEffects
 
         varEffects     = varGenotypic/((1-π)*mean2pq)
         locusEffectVar = fill(varEffects,nMarkers)
