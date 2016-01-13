@@ -2,7 +2,7 @@ module QTL
 
 using DataFrames
 
-include("types.jl")
+include("QTL_types.jl")
 include("tools.jl")
 include("files.jl")
 include("qc.jl")
