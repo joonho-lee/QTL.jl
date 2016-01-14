@@ -1,12 +1,12 @@
 function sample_fixed!(mats::GibbsMats,current::Current,out::Output)
     nObs,nEffects = mats.nrows,mats.ncols
-    xArray        = mats.XArray
+    xArray        = mats.xArray
     xpx           = mats.xpx
     yCorr         = current.yCorr
     α             = current.α
     varRes        = current.varResidual
     iIter         = 1/current.iter
-    meanAlpha     = out.meanAlpha
+    meanAlpha     = out.meanFixdEffects
 
     for j=1:nEffects
         x = xArray[j]
@@ -23,14 +23,14 @@ end
 
 function sample_random_ycorr!(mats::GibbsMats,current::Current,out::Output)#sample vare and vara
     nObs,nEffects = mats.nrows,mats.ncols
-    xArray        = mats.XArray
+    xArray        = mats.xArray
     xpx           = mats.xpx
     yCorr         = current.yCorr
     α             = current.α
     varRes        = current.varResidual
     λ             = current.varResidual/current.varEffects
     iIter         = 1/current.iter
-    meanAlpha     = out.meanAlpha
+    meanAlpha     = out.meanMarkerEffects
 
     for j=1:nEffects
         x = xArray[j]
@@ -46,13 +46,13 @@ function sample_random_ycorr!(mats::GibbsMats,current::Current,out::Output)#samp
 end
 
 function sample_random_rhs!(lhs,rhs,current::Current,out::Output) #(Gianola Book)
-    nEffects = size(lhs,1)
+    nEffects      = size(lhs,1)
     α             = current.α
     varRes        = current.varResidual
     iIter         = 1/current.iter
-    meanAlpha     = out.meanAlpha
+    meanAlpha     = out.meanEpsi
 
-    for (i in 1:nEffects) #argument lhs here is a sparse matrix for whole lhs
+    for i = 1:nEffects #argument lhs here is a sparse matrix for whole lhs
         α[i] = 0.0
         rhsi = rhs[i] - lhs[i,:]*α
         lhsi = lhs[i,i]
@@ -69,12 +69,13 @@ end
 
 function sample_random_ycorr!(mats::GibbsMats,current::Current,out::Output,lhsDi,sd)#not sample vare and vara
     nObs,nEffects = mats.nrows,mats.ncols
-    xArray        = mats.XArray
+    xArray        = mats.xArray
     xpx           = mats.xpx
     yCorr         = current.yCorr
     α             = current.α
     iIter         = 1/current.iter
-    meanAlpha     = out.meanAlpha
+    meanAlpha     = out.meanMarkerEffects #not good, not general
+                                          #Put option in arguments
 
     for j=1:nEffects
         @inbounds x = xArray[j]
@@ -88,15 +89,17 @@ function sample_random_ycorr!(mats::GibbsMats,current::Current,out::Output,lhsDi
 end
 
 function sample_random_rhs!(lhsCol,rhs,current::Current,out::Output,lhsDi,sd)
-    nEffects = size(lhs,1)      #arguments lhs here is a array of cols of lhs
-    α             = current.α
+    nEffects      = length(lhsCol)      #arguments lhs here is a array of cols of lhs
+    α             = current.ϵ           #not good, not general
     iIter         = 1/current.iter
-    meanAlpha     = out.meanAlpha
+    meanAlpha     = out.meanEpsi
 
-    for (i in 1:nEffects)
+    for i = 1:nEffects
         @inbounds α[i] = 0.0
         @inbounds rhsi = rhs[i] - lhsCol[i]'α
         @inbounds α[i] = lhsDi[i]*rhsi[1] + randn()*sd[i]
         @inbounds meanAlpha[i] += (α[i] - meanAlpha[i])*iIter
     end
 end
+
+export sample_fixed!,sample_random_rhs!,sample_random_ycorr!

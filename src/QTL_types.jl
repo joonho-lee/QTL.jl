@@ -28,8 +28,8 @@ type GibbsMats
 end
 
 type Current
-    vare::Float64       #residual variance
-    varEffects::Float64 # common marker variance
+    varResidual::Float64       #residual variance
+    varEffect::Float64  # common marker variance
     scaleVar::Float64   # scale factor for locus effects
     scaleRes::Float64   # scale factor for residual varianc
     β                   # sample of fixed effects
@@ -46,19 +46,19 @@ type Current
 
     function Current(input::InputParameters,geno::Genotypes,
                      fixed::FixedMatrix,y::Array{Float64,1})
-        vare        = input.varResidual
+        varResidual = input.varResidual
         π           = input.probFixed
         dfEffectVar = input.dfEffectVar
         nuRes       = input.nuRes
         varGenotypic= input.varGenotypic
         sum2pq      = geno.sum2pq
         nMarkers    = geno.nMarkers
-        nFixedEffects  = fixed.ncols
+        nFixedEffects  = size(fixed.C,2)
 
-        varEffects     = varGenotypic/((1-π)*sum2pq)
-        locusEffectVar = fill(varEffects,nMarkers) #add if statement later
-        scaleVar       = varEffects*(dfEffectVar-2)/dfEffectVar # scale factor for locus effects
-        scaleRes       = vare*(nuRes-2)/nuRes                   # scale factor for residual varianc
+        varEffect      = varGenotypic/((1-π)*sum2pq)
+        locusEffectVar = fill(varEffect,nMarkers) #add if statement later
+        scaleVar       = varEffect*(dfEffectVar-2)/dfEffectVar # scale factor for locus effects
+        scaleRes       = varResidual*(nuRes-2)/nuRes                   # scale factor for residual varianc
         β          = zeros(nFixedEffects)  # sample of fixed effects
         α          = zeros(nMarkers)       # sample of partial marker effects unconditional on δ
         δ          = zeros(nMarkers)       # inclusion indicator for marker effects
@@ -68,7 +68,7 @@ type Current
         yCorr      = copy(y)
         ϵ          = zeros(1)
 
-        new(vare,varEffects,scaleVar,scaleRes,β,α,δ,u,π,locusEffectVar,iter,yCorr,ϵ)
+        new(varResidual,varEffect,scaleVar,scaleRes,β,α,δ,u,π,locusEffectVar,iter,yCorr,ϵ)
     end
 end
 
@@ -81,9 +81,9 @@ type Output
     pi::Array{Float64,1}
     scale::Array{Float64,1}
 
-    meanEpsi::Array{Float64}  = zeros(Float64,all_num.num_g1)
+    meanEpsi::Array{Float64,1}
 
-    function Output(input::InputParameters,geno::Genotype,fixed::FixedMatrix)
+    function Output(input::InputParameters,geno::Genotypes,fixed::FixedMatrix)
       chainLength   = input.chainLength
       nFixedEffects = length(fixed.variables)
       nMarkers      = geno.nMarkers
@@ -98,4 +98,7 @@ type Output
     end
 end
 
-export InputParameters,Output,GibbsMats,Current
+export InputParameters
+export Output
+export GibbsMats
+export Current

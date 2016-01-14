@@ -64,3 +64,17 @@ function mkmat_incidence_factor(b)
     end
     return coMat,factor
 end
+
+export FixedMatrix
+#=
+    ids = Array(UTF8String,size(fixed.C,2))
+    k = 1
+    for i in fixed.variable
+      if variable[i]=="covariate"
+        ids[k] = "covariate"
+        k+=1
+      else
+        for level in variabel[i]
+          ids[k]=level
+=#
+

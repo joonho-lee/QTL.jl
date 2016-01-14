@@ -133,3 +133,15 @@ function get_gene_freq(X,id=true)
   return freq
 end
 
+function getXpRinvX(X, Rinv)
+    ncol = size(X)[2]
+    XpRinvX = [((X[:,i].*Rinv)'X[:,i])[1]::Float64 for i=1:ncol]
+    return XpRinvX
+end
+
+function getXpRinvX(X)
+    XpRinvX = [dot(X[:,i],X[:,i]) for i=1:size(X,2)]
+    return XpRinvX
+end
+
+
