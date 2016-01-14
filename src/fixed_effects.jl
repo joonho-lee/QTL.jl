@@ -1,17 +1,9 @@
 type FixedMatrix
     C::Array{Float64,2}
-    nFixedEffects = size(C,2)
-    fixedNames::Array{AbstractString,1}
-
-    function FixedMatrix(file::DataFrames) ###More
-        mean2pq     = (2*p*(1-p)')[1,1]
-        xArray = get_column_ref(X)
-        XpRinvX = getXpRinvX(X)
-        new(X,xArray,XpRinvX,markerMeans,mean2pq,true)
-    end
+    variables::Array{Any,1}
 end
 
-function make_fixed(file;id4col=true,variable=true)
+function make_fixed(file;id4col=true,typeofvariable=true) #maybe better to use number, factor
     myfile = open(file)
     #get number of columns
     row1   = split(readline(myfile))
@@ -23,36 +15,39 @@ function make_fixed(file;id4col=true,variable=true)
     end
     #set types for each column and get number of markers
     ncol= length(row1)
-    if variable==true
+    if typeofvariable==true
         etv = Array(DataType,ncol)
         fill!(etv,UTF8String)
     else
-        etv = variable
+        etv = typeofvariable
     end
     close(myfile)
 
     #read genotypes
     df = readtable(file, eltypes=etv, separator = ' ',header=id4col)
 
-    if variable[1]==Float64
+    variables=Array{Any}(ncol)
+    if typeofvariable[1]==Float64
         C = convert(Array,df[:,1])
+        variables[1] = "covariate"
     else
-        C,levels=mkmat_incidence_factor(df[:,1])
+        C,variables[1]=mkmat_incidence_factor(df[:,1])
     end
     for i=2:size(df,2)
-      if variable[i]==Float64
+      if typeofvariable[i]==Float64
           C = [C convert(Array,df[:,i])]
+          variables[i] = "covariate"
       else
-          C,levels=[C mkmat_incidence_factor(df[:,i])]
+          C,variables[i]=[C mkmat_incidence_factor(df[:,i])]
       end
     end
 
-    return
+    return FixedMatrix(C,variables)
 end
 
 function mkmat_incidence_factor(b)
     factor=unique(b)
-    coMat= spzeros(length(b),length(factor))
+    coMat= spzeros(length(b),length(factor)) #maybe better another way to construct sparse matrix here
 
     dictFactor = Dict()
     index=1
@@ -67,5 +62,5 @@ function mkmat_incidence_factor(b)
         coMat[nrow,myindex]=1
         nrow=nrow+1
     end
-    return full(coMat),factor
+    return coMat,factor
 end
