@@ -24,7 +24,7 @@ function center!(X)
     return colMeans
 end
 
-function center(X)
+function center2(X) #without 2 here, not use center! and center togehter, maybe Julia bug
     X=copy(X)
     nrow,ncol = size(X)
     colMeans = mean(X,1)

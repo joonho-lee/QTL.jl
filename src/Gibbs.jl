@@ -3,7 +3,7 @@ function sample_fixed!(mats::GibbsMats,current::Current,out::Output)
     xArray        = mats.xArray
     xpx           = mats.xpx
     yCorr         = current.yCorr
-    α             = current.α
+    α             = current.β
     varRes        = current.varResidual
     iIter         = 1/current.iter
     meanAlpha     = out.meanFixdEffects

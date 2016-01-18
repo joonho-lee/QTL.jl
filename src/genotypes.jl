@@ -9,7 +9,7 @@ type Genotypes
   genotypes::Array{Float64,2}
 end
 
-function make_genotypes(file;id4col=false,center=true)
+function make_genotypes(file;id4col=false,center=false)
     myfile = open(file)
     #get number of columns
     row1   = split(readline(myfile))
@@ -36,7 +36,7 @@ function make_genotypes(file;id4col=false,center=true)
     if center==true
         markerMeans = center!(genotypes) #centering
     else
-        markerMeans = center(genotypes)  #get marker means
+        markerMeans = center!(copy(genotypes))  #get marker means
     end
     p             = markerMeans/2.0
     mean2pq       = (2*p*(1-p)')[1,1]
