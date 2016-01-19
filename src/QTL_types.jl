@@ -32,7 +32,7 @@ type Current
     varEffect::Float64  # common marker variance
     scaleVar::Float64   # scale factor for locus effects
     scaleRes::Float64   # scale factor for residual varianc
-    β                   # sample of fixed effects
+    fixed_effects       # sample of fixed effects β
     α                   # sample of partial marker effects unconditional on δ
     δ                   # inclusion indicator for marker effects
     u                   # sample of marker effects,u=α·δ
@@ -42,7 +42,7 @@ type Current
     iter
     yCorr
 
-    ϵ                   #residual in SSBR
+    imputation_residual #residual in SSBR
 
     function Current(input::InputParameters,geno::Genotypes,
                      fixed::FixedMatrix,y::Array{Float64,1})
@@ -73,7 +73,7 @@ type Current
 end
 
 type Output
-    meanFixdEffects::Array{Float64,1}
+    mean_fixed_effects::Array{Float64,1}
     meanMarkerEffects::Array{Float64,1}
     modelFreq::Array{Float64,1}
     resVar::Array{Float64,1}
@@ -81,7 +81,7 @@ type Output
     pi::Array{Float64,1}
     scale::Array{Float64,1}
 
-    meanEpsi::Array{Float64,1}
+    mean_imputation_residual::Array{Float64,1}
 
     function Output(input::InputParameters,geno::Genotypes,fixed::FixedMatrix)
       chainLength   = input.chainLength

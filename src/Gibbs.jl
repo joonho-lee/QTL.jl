@@ -1,12 +1,13 @@
 function sample_fixed!(mats::GibbsMats,current::Current,out::Output)
+    α             = current.fixed_effects
+    meanAlpha     = out.mean_fixed_effects
+
     nObs,nEffects = mats.nrows,mats.ncols
     xArray        = mats.xArray
     xpx           = mats.xpx
     yCorr         = current.yCorr
-    α             = current.β
     varRes        = current.varResidual
     iIter         = 1/current.iter
-    meanAlpha     = out.meanFixdEffects
 
     for j=1:nEffects
         x = xArray[j]
@@ -21,16 +22,36 @@ function sample_fixed!(mats::GibbsMats,current::Current,out::Output)
     end
 end
 
+function sample_random_rhs!(lhs,rhs,current::Current,out::Output) #(Gianola Book)
+    α             = current.imputation_residual
+    meanAlpha     = out.mean_imputation_residual
+
+    nEffects      = size(lhs,1)
+    varRes        = current.varResidual
+    iIter         = 1/current.iter
+
+    for i = 1:nEffects #argument lhs here is a sparse matrix for whole lhs
+        α[i] = 0.0
+        rhsi = rhs[i] - lhs[i,:]*α
+        lhsi = lhs[i,i]
+        invLhs = 1.0/lhsi
+        meani  = invLhs*rhsi[1]
+        α[i] = meani + randn()*sqrt(invLhs*varRes)
+        meanAlpha[i] += (α[i] - meanAlpha[i])*iIter
+    end
+end
+
 function sample_random_ycorr!(mats::GibbsMats,current::Current,out::Output)#sample vare and vara
+    α             = current.α
+    meanAlpha     = out.meanMarkerEffects
+
     nObs,nEffects = mats.nrows,mats.ncols
     xArray        = mats.xArray
     xpx           = mats.xpx
     yCorr         = current.yCorr
-    α             = current.α
     varRes        = current.varResidual
     λ             = current.varResidual/current.varEffects
     iIter         = 1/current.iter
-    meanAlpha     = out.meanMarkerEffects
 
     for j=1:nEffects
         x = xArray[j]
@@ -45,37 +66,21 @@ function sample_random_ycorr!(mats::GibbsMats,current::Current,out::Output)#samp
     end
 end
 
-function sample_random_rhs!(lhs,rhs,current::Current,out::Output) #(Gianola Book)
-    nEffects      = size(lhs,1)
-    α             = current.α
-    varRes        = current.varResidual
-    iIter         = 1/current.iter
-    meanAlpha     = out.meanEpsi
 
-    for i = 1:nEffects #argument lhs here is a sparse matrix for whole lhs
-        α[i] = 0.0
-        rhsi = rhs[i] - lhs[i,:]*α
-        lhsi = lhs[i,i]
-        invLhs = 1.0/lhsi
-        meani  = invLhs*rhsi[1]
-        α[i] = meani + randn()*sqrt(invLhs*varRes)
-        meanAlpha[i] += (α[i] - meanAlpha[i])*iIter
-    end
-end
 
 
 ## NOT sample vare and vara
 ## construct lhsDi,sd outside
 
 function sample_random_ycorr!(mats::GibbsMats,current::Current,out::Output,lhsDi,sd)#not sample vare and vara
+    α             = current.α
+    meanAlpha     = out.meanMarkerEffects #not good, not general
+                                          #Put option in arguments
     nObs,nEffects = mats.nrows,mats.ncols
     xArray        = mats.xArray
     xpx           = mats.xpx
     yCorr         = current.yCorr
-    α             = current.α
     iIter         = 1/current.iter
-    meanAlpha     = out.meanMarkerEffects #not good, not general
-                                          #Put option in arguments
 
     for j=1:nEffects
         @inbounds x = xArray[j]
@@ -89,10 +94,11 @@ function sample_random_ycorr!(mats::GibbsMats,current::Current,out::Output,lhsDi
 end
 
 function sample_random_rhs!(lhsCol,rhs,current::Current,out::Output,lhsDi,sd)
+    α             = current.imputation_residual
+    meanAlpha     = out.mean_imputation_residual
+
     nEffects      = length(lhsCol)      #arguments lhs here is a array of cols of lhs
-    α             = current.ϵ           #not good, not general
     iIter         = 1/current.iter
-    meanAlpha     = out.meanEpsi
 
     for i = 1:nEffects
         @inbounds α[i] = 0.0
@@ -102,4 +108,9 @@ function sample_random_rhs!(lhsCol,rhs,current::Current,out::Output,lhsDi,sd)
     end
 end
 
-export sample_fixed!,sample_random_rhs!,sample_random_ycorr!
+function sample_variance(x, n, df, scale)
+    return (dot(x,x) + df*scale)/rand(Chisq(n+df))
+end
+
+
+export sample_fixed!,sample_random_rhs!,sample_random_ycorr!,sample_variance
