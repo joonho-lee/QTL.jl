@@ -1,5 +1,5 @@
 type Genotypes
-  obsID::Array{UTF8String,1}  #row ID of genotypes
+  obsID::Array{UTF8String,1}    #row ID of genotypes
   markerID
   nObs::Int64
   nMarkers::Int64
@@ -9,12 +9,12 @@ type Genotypes
   genotypes::Array{Float64,2}
 end
 
-function make_genotypes(file;id4col=false,center=false)
+function make_genotypes(file;header=false,center=false)
     myfile = open(file)
     #get number of columns
     row1   = split(readline(myfile))
 
-    if id4col==true
+    if header==true
       markerID=row1[2:end]  #skip header
     else
       markerID= NaN
@@ -27,7 +27,7 @@ function make_genotypes(file;id4col=false,center=false)
     close(myfile)
 
     #read genotypes
-    df = readtable(file, eltypes=etv, separator = ' ',header=id4col)
+    df = readtable(file, eltypes=etv, separator = ' ',header=header)
 
     obsID=convert(Array,df[:,1])
     genotypes =convert(Array,df[:,2:end])

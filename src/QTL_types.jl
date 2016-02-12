@@ -9,9 +9,10 @@ type InputParameters
   estimateScale::Bool    # true or false
   dfEffectVar::Float64   # hyper parameter (degrees of freedom) for locus effect variance
   nuRes::Float64         # hyper parameter (degrees of freedom) for residual variance
+  nuGen::Float64         # hyper parameter (degree of freedom) for genetic variance (for ϵ)
 end
 
-InputParameters()=InputParameters("BayesC",50000,0.95,1.0,1.0,true,false,false,4,4)
+InputParameters()=InputParameters("BayesC",50000,0.95,1.0,1.0,true,false,false,4,4,4)
 
 type GibbsMats
     X::Array{Float64,2}
@@ -28,10 +29,12 @@ type GibbsMats
 end
 
 type Current
+    varGenotypic::Float64      #genotypic variance
     varResidual::Float64       #residual variance
     varEffect::Float64  # common marker variance
     scaleVar::Float64   # scale factor for locus effects
     scaleRes::Float64   # scale factor for residual varianc
+    scaleGen::Float64
     fixed_effects       # sample of fixed effects β
     α                   # sample of partial marker effects unconditional on δ
     δ                   # inclusion indicator for marker effects
@@ -46,10 +49,12 @@ type Current
 
     function Current(input::InputParameters,geno::Genotypes,
                      fixed::FixedMatrix,y::Array{Float64,1})
+        varGenotypic= input.varGenotypic
         varResidual = input.varResidual
         π           = input.probFixed
         dfEffectVar = input.dfEffectVar
         nuRes       = input.nuRes
+        nuGen       = input.nuGen
         varGenotypic= input.varGenotypic
         sum2pq      = geno.sum2pq
         nMarkers    = geno.nMarkers
@@ -59,6 +64,7 @@ type Current
         locusEffectVar = fill(varEffect,nMarkers) #add if statement later
         scaleVar       = varEffect*(dfEffectVar-2)/dfEffectVar # scale factor for locus effects
         scaleRes       = varResidual*(nuRes-2)/nuRes                   # scale factor for residual varianc
+        scaleGen       = varGenotypic*(nuGen-2)/nuGen                   # scale factor for residual varianc
         β          = zeros(nFixedEffects)  # sample of fixed effects
         α          = zeros(nMarkers)       # sample of partial marker effects unconditional on δ
         δ          = zeros(nMarkers)       # inclusion indicator for marker effects
@@ -68,7 +74,8 @@ type Current
         yCorr      = copy(y)
         ϵ          = zeros(1)
 
-        new(varResidual,varEffect,scaleVar,scaleRes,β,α,δ,u,π,locusEffectVar,iter,yCorr,ϵ)
+        new(varGenotypic,varResidual,varEffect,scaleVar,scaleRes,scaleGen,
+            β,α,δ,u,π,locusEffectVar,iter,yCorr,ϵ)
     end
 end
 

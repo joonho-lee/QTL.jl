@@ -1,3 +1,9 @@
+function sample_variance(x, n, df, scale)
+    return (dot(x,x) + df*scale)/rand(Chisq(n+df))
+end
+function sample_epsilon_variance(ϵ,Ai,n,df,scale) #assume df same to vareffect
+    return ((ϵ'Ai*ϵ)[1,1] + df*scale)/rand(Chisq(n+df))
+end
 function sample_fixed!(mats::GibbsMats,current::Current,out::Output)
     α             = current.fixed_effects
     meanAlpha     = out.mean_fixed_effects
@@ -32,7 +38,7 @@ function sample_random_rhs!(lhs,rhs,current::Current,out::Output) #(Gianola Book
 
     for i = 1:nEffects #argument lhs here is a sparse matrix for whole lhs
         α[i] = 0.0
-        rhsi = rhs[i] - lhs[i,:]*α
+        rhsi = rhs[i] - lhs[:,i]'α #column-major
         lhsi = lhs[i,i]
         invLhs = 1.0/lhsi
         meani  = invLhs*rhsi[1]
@@ -50,7 +56,7 @@ function sample_random_ycorr!(mats::GibbsMats,current::Current,out::Output)#samp
     xpx           = mats.xpx
     yCorr         = current.yCorr
     varRes        = current.varResidual
-    λ             = current.varResidual/current.varEffects
+    λ             = current.varResidual/current.varEffect
     iIter         = 1/current.iter
 
     for j=1:nEffects
@@ -108,9 +114,5 @@ function sample_random_rhs!(lhsCol,rhs,current::Current,out::Output,lhsDi,sd)
     end
 end
 
-function sample_variance(x, n, df, scale)
-    return (dot(x,x) + df*scale)/rand(Chisq(n+df))
-end
-
-
 export sample_fixed!,sample_random_rhs!,sample_random_ycorr!,sample_variance
+export sample_epsilon_variance
