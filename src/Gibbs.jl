@@ -42,6 +42,10 @@ function sample_random_rhs!(lhs,rhs,current::Current,out::Output) #(Gianola Book
         lhsi = lhs[i,i]
         invLhs = 1.0/lhsi
         meani  = invLhs*rhsi[1]
+        #println(invLhs*varRes)
+        #if invLhs*varRes < 0
+        #  println(lhsi,"  ",varRes)
+        #end
         α[i] = meani + randn()*sqrt(invLhs*varRes)
         meanAlpha[i] += (α[i] - meanAlpha[i])*iIter
     end
