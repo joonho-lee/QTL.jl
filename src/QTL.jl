@@ -10,5 +10,7 @@ include("tools.jl")
 include("files.jl")
 include("QualityControl.jl")
 include("Gibbs.jl")
+include("BayesianAlphabet/BayesB.jl")
+include("BayesianAlphabet/BayesC.jl")
 
 end

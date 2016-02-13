@@ -1,9 +1,11 @@
 function sample_variance(x, n, df, scale)
     return (dot(x,x) + df*scale)/rand(Chisq(n+df))
 end
+
 function sample_epsilon_variance(ϵ,Ai,n,df,scale) #assume df same to vareffect
     return ((ϵ'Ai*ϵ)[1,1] + df*scale)/rand(Chisq(n+df))
 end
+
 function sample_fixed!(mats::GibbsMats,current::Current,out::Output)
     α             = current.fixed_effects
     meanAlpha     = out.mean_fixed_effects

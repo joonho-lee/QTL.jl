@@ -1,6 +1,8 @@
 type InputParameters
-  method::AbstractString #BaysABC
+  seed::Int64            # seed
+  method::AbstractString # BaysABC
   chainLength::Int64     # number of iterations
+  outFreq::Int64         # frequency to print out MCMC status
   probFixed::Float64     # parameter "pi" the probability SNP effect is zero
   varGenotypic::Float64  # used to derive hyper parameter (scale) for locus effect variance
   varResidual::Float64   # used to derive hyper parameter (scale) for locus effect variance
@@ -12,7 +14,7 @@ type InputParameters
   nuGen::Float64         # hyper parameter (degree of freedom) for genetic variance (for ϵ)
 end
 
-InputParameters()=InputParameters("BayesC",50000,0.95,1.0,1.0,true,false,false,4,4,4)
+InputParameters()=InputParameters(314,"BayesC",50000,1000,0.95,1.0,1.0,true,false,false,4,4,4)
 
 type GibbsMats
     X::Array{Float64,2}
@@ -43,6 +45,7 @@ type Current
     locusEffectVar      #locus-specific variance
 
     iter
+    nLoci               #count number of markers in the model
     yCorr
 
     imputation_residual #residual in SSBR
@@ -71,11 +74,12 @@ type Current
         u          = zeros(nMarkers)       # sample of marker effects
 
         iter       = 0
+        nLoci      = 0
         yCorr      = copy(y)
         ϵ          = zeros(1)
 
         new(varGenotypic,varResidual,varEffect,scaleVar,scaleRes,scaleGen,
-            β,α,δ,u,π,locusEffectVar,iter,yCorr,ϵ)
+            β,α,δ,u,π,locusEffectVar,iter,nLoci,yCorr,ϵ)
     end
 end
 
