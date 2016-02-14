@@ -16,6 +16,24 @@ end
 
 InputParameters()=InputParameters(314,"BayesC",50000,1000,0.95,1.0,1.0,true,false,false,4,4,4)
 
+function MCMCinfo(input::InputParameters)
+    println("MCMC Information:")
+    @printf("%-20s %10s\n","seed",input.seed)
+    @printf("%-20s %10s\n","chainLength",input.chainLength)
+    @printf("%-20s %10s\n","method",input.method)
+    @printf("%-20s %10d\n","outFreq",input.outFreq)
+    @printf("%-20s %10.3f\n","probFixed",input.probFixed)
+    @printf("%-20s %10.3f\n","varGenotypic",input.varGenotypic)
+    @printf("%-20s %10.3f\n","varResidual",input.varResidual)
+    @printf("%-20s %10s\n","estimateVariance",input.estimateVariance)
+    @printf("%-20s %10s\n","estimatePi",input.estimatePi)
+    @printf("%-20s %10s\n","estimateScale",input.estimateScale)
+    @printf("%-20s %10.3f\n","dfEffectVar",input.dfEffectVar)
+    @printf("%-20s %10.3f\n","nuRes",input.nuRes)
+    @printf("%-20s %10.3f\n","nuGen",input.nuGen)
+end
+
+
 type GibbsMats
     X::Array{Float64,2}
     nrows::Int64
@@ -113,3 +131,4 @@ export InputParameters
 export Output
 export GibbsMats
 export Current
+export MCMCinfo
