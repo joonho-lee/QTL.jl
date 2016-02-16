@@ -1,3 +1,7 @@
+function samplePi(nEffects, nTotal)
+    return rand(Beta(nTotal-nEffects+1, nEffects+1))
+end
+
 function sample_variance(x, n, df, scale)
     return (dot(x,x) + df*scale)/rand(Chisq(n+df))
 end
@@ -121,4 +125,4 @@ function sample_random_rhs!(lhsCol,rhs,current::Current,out::Output,lhsDi,sd)
 end
 
 export sample_fixed!,sample_random_rhs!,sample_random_ycorr!,sample_variance
-export sample_epsilon_variance
+export sample_epsilon_variance,samplePi
