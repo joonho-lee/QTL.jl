@@ -12,9 +12,10 @@ type InputParameters
   dfEffectVar::Float64   # hyper parameter (degrees of freedom) for locus effect variance
   nuRes::Float64         # hyper parameter (degrees of freedom) for residual variance
   nuGen::Float64         # hyper parameter (degree of freedom) for genetic variance (for ϵ)
+  centering::Bool        # center real genotype or not
 end
 
-InputParameters()=InputParameters(314,"BayesC",50000,1000,0.95,1.0,1.0,true,false,false,4,4,4)
+InputParameters()=InputParameters(314,"BayesC",50000,1000,0.95,1.0,1.0,true,false,false,4,4,4,false)
 
 function MCMCinfo(input::InputParameters)
     println("MCMC Information:")
@@ -31,8 +32,8 @@ function MCMCinfo(input::InputParameters)
     @printf("%-20s %10.3f\n","dfEffectVar",input.dfEffectVar)
     @printf("%-20s %10.3f\n","nuRes",input.nuRes)
     @printf("%-20s %10.3f\n","nuGen",input.nuGen)
+    @printf("%-20s %10.3f\n","nuGen",input.centering)
 end
-
 
 type GibbsMats
     X::Array{Float64,2}
