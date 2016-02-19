@@ -32,7 +32,7 @@ function MCMCinfo(input::InputParameters)
     @printf("%-20s %10.3f\n","dfEffectVar",input.dfEffectVar)
     @printf("%-20s %10.3f\n","nuRes",input.nuRes)
     @printf("%-20s %10.3f\n","nuGen",input.nuGen)
-    @printf("%-20s %10.3f\n","nuGen",input.centering)
+    @printf("%-20s %10s\n","centering",input.centering)
 end
 
 type GibbsMats
