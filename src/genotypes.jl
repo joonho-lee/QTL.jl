@@ -39,9 +39,9 @@ function make_genotypes(file;header=false,center=true)
         markerMeans = center!(copy(genotypes))  #get marker means
     end
     p             = markerMeans/2.0
-    mean2pq       = (2*p*(1-p)')[1,1]
+    sum2pq        = (2*p*(1-p)')[1,1]
 
-    return Genotypes(obsID,markerID,nObs,nMarkers,p,mean2pq,center,genotypes)
+    return Genotypes(obsID,markerID,nObs,nMarkers,p,sum2pq,center,genotypes)
 end
 
 function make_genotypes(M::Array{Float64,2};header=false,center=true)
@@ -57,9 +57,9 @@ function make_genotypes(M::Array{Float64,2};header=false,center=true)
         markerMeans = QTL.center!(copy(genotypes))  #get marker means
     end
     p             = markerMeans/2.0
-    mean2pq       = (2*p*(1-p)')[1,1]
+    sum2pq       = (2*p*(1-p)')[1,1]
 
-    return Genotypes(obsID,markerID,nObs,nMarkers,p,mean2pq,center,genotypes)
+    return Genotypes(obsID,markerID,nObs,nMarkers,p,sum2pq,center,genotypes)
 end
 
 export make_genotypes
