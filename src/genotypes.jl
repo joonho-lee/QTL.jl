@@ -9,7 +9,7 @@ type Genotypes
   genotypes::Array{Float64,2}
 end
 
-function make_genotypes(file;header=false,center=false)
+function make_genotypes(file;header=false,center=true)
     myfile = open(file)
     #get number of columns
     row1   = split(readline(myfile))
@@ -37,6 +37,24 @@ function make_genotypes(file;header=false,center=false)
         markerMeans = center!(genotypes) #centering
     else
         markerMeans = center!(copy(genotypes))  #get marker means
+    end
+    p             = markerMeans/2.0
+    mean2pq       = (2*p*(1-p)')[1,1]
+
+    return Genotypes(obsID,markerID,nObs,nMarkers,p,mean2pq,center,genotypes)
+end
+
+function make_genotypes(M::Array{Float64,2};header=false,center=true)
+
+    obsID     = ["NA"]
+    markerID = NaN
+    genotypes = M
+    nObs,nMarkers = size(genotypes)
+
+    if center==true
+        markerMeans = QTL.center!(genotypes) #centering
+    else
+        markerMeans = QTL.center!(copy(genotypes))  #get marker means
     end
     p             = markerMeans/2.0
     mean2pq       = (2*p*(1-p)')[1,1]
