@@ -48,7 +48,7 @@ function make_genotypes(M::Array{Float64,2};header=false,center=true)
 
     obsID     = ["NA"]
     markerID = NaN
-    genotypes = M
+    genotypes = copy(M) #not good, double memory
     nObs,nMarkers = size(genotypes)
 
     if center==true
